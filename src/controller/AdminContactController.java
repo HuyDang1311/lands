@@ -1,5 +1,6 @@
 package controller;
 
+import javax.servlet.http.HttpSession;
 import javax.websocket.server.PathParam;
 
 import org.apache.tiles.autotag.core.runtime.annotation.Parameter;
@@ -18,6 +19,7 @@ import constant.Defines;
 import dao.CatDao;
 import dao.ContactDao;
 import entity.Cat;
+import entity.User;
 import util.Regular;
 
 @Controller
@@ -25,27 +27,39 @@ import util.Regular;
 public class AdminContactController {
 	@Autowired
 	private ContactDao contactDao;
-	@RequestMapping({"{page}",""})
-	public String index(ModelMap modelMap, @PathVariable(value = "page", required = false) Integer currentPage){
-		if(currentPage == null) {
+
+	@RequestMapping({ "{page}", "" })
+	public String index(ModelMap modelMap, @PathVariable(value = "page", required = false) Integer currentPage,HttpSession session) {
+		if (currentPage == null) {
 			currentPage = 1;
 		}
-		int sumPage = (int)Math.ceil((float)contactDao.countContact()/Defines.ROW_COUNT);
-		int offset = (currentPage-1)*Defines.ROW_COUNT;
-		modelMap.addAttribute("sumPage",sumPage);
-		modelMap.addAttribute("listContact",contactDao.getListContact(offset));
-		modelMap.addAttribute("currentPage",currentPage);
+		int sumPage = (int) Math.ceil((float) contactDao.countContact() / Defines.ROW_COUNT);
+		int offset = (currentPage - 1) * Defines.ROW_COUNT;
+		modelMap.addAttribute("sumPage", sumPage);
+		modelMap.addAttribute("listContact", contactDao.getListContact(offset));
+		modelMap.addAttribute("currentPage", currentPage);
+		User user = (User) session.getAttribute("user");
+		modelMap.addAttribute("user",user);
 		return "admin.contact.index";
 	}
 	
+	@RequestMapping(value = "search", method = RequestMethod.POST)
+	public String search(@RequestParam("search") String search, ModelMap modelMap,HttpSession session) {
+		System.out.println(search);
+		modelMap.addAttribute("listContact", contactDao.getListSearch(search));
+		User user = (User) session.getAttribute("user");
+		modelMap.addAttribute("user",user);
+		return "admin.contact.index";
+	}
+
 	@RequestMapping("del/{id}")
 	public String edit(@PathVariable("id") String lid, RedirectAttributes ra) {
 		try {
 			int id = Integer.parseInt(lid);
-			if(contactDao.getCheckID(id).size() == 0) {
-				ra.addFlashAttribute("err","ID không tồn tại !");
+			if (contactDao.getCheckID(id).size() == 0) {
+				ra.addFlashAttribute("err", "ID không tồn tại !");
 				return "redirect:/admin/contact";
-			}else {
+			} else {
 				if (contactDao.getDelContact(id) > 0) {
 					ra.addFlashAttribute("msg", "Bạn đã xóa thành công !");
 				} else {
@@ -54,7 +68,7 @@ public class AdminContactController {
 				return "redirect:/admin/contact";
 			}
 		} catch (NumberFormatException e) {
-			ra.addFlashAttribute("err","Lỗi địa chỉ URL!");
+			ra.addFlashAttribute("err", "Lỗi địa chỉ URL!");
 			return "redirect:/admin/contact";
 		}
 	}

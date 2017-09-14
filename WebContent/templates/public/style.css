@@ -17,7 +17,7 @@ body{font-family:Arial;
 a{text-decoration:none;color:#000;}
 a:hover{text-decoration:none}
 input[type=text],input[type=password],input[type=submit],textarea{border:1px solid #ddd;padding:5px;outline:0;}
-h1,h2,h3,h4,h5,h6{font-weight:normal;margin:0 0 15px;font-family: 'Oswald', sans-serif;}
+h1,h2,h3,h4,h5,h6{font-weight:normal;margin:0 0 15px;}
 h2 {font-size:25px;line-height:30px}
 img{max-width:100%;height:auto;border:none}
 
@@ -76,7 +76,7 @@ padding-left: 5px;
 text-indent: -99999px;
 width: 33px;}
 .header_bottom{background: none repeat scroll 0 0 #ffd500;
-min-height: 30px;
+    height: 52px;
 padding: 10px;}
 /* dropdown menu*/
 .header_bottom ul{list-style: none outside none;
@@ -152,7 +152,13 @@ display: block;
 font-family: oswald light;
 margin-top: 10px;
 padding: 5px 10px;
-width: 140px;float:right;}
+width: 154px;float:right;}
+
+#more{background: url("images/nav_right.png") no-repeat scroll 130px 4px #ffd500;
+display: block;
+font-family: oswald light;
+padding: 5px 10px;
+width: 154px;}
 .post_detail > a:hover{font-family: oswald;}
 .post_detail h2{font-size: 20px;
 margin-bottom: 10px;}
@@ -213,14 +219,14 @@ width: 120px;cursor:pointer;}
 .single_sidebar{background: url("images/slider_bg.png") repeat scroll 0 0 rgba(0, 0, 0, 0);padding: 10px;margin-bottom:25px;}
 .sidebar_title{background: url("images/title_down.png") no-repeat scroll 12px 45px rgba(0, 0, 0, 0);
 height: 73px;margin-bottom:15px;}
-.sidebar_title > h2{background: none repeat scroll 0 0 #222222;
+.sidebar_title > h2{background: none repeat scroll 0 0 #241f3a;
 color: #fff;
 font-size: 16px;
 margin-left: -10px;
 margin-top: -10px;
 padding: 8px 10px;
 text-transform: uppercase;
-width: 100%;}
+}
 
 /*popular post*/
 .single_sidebar .popular_post ul{}
@@ -230,7 +236,7 @@ background: #fff;
 padding: 10px;
 margin-bottom: 10px;
 font-size: 16px;
-font-family: oswald;
+font-family: arial;
 box-shadow: 1px 4px 3px -2px #DDDDDD;
 -webkit-box-shadow: 1px 4px 3px -2px #DDDDDD;
 -moz-box-shadow: 1px 4px 3px -2px #DDDDDD;
@@ -338,7 +344,7 @@ margin-bottom: 2px;color:#000}
 .more_post a:hover{color:#FFD500;font-weight:bold;}
 .advertisement_container{}
 .advertisement{}
-.content ul{margin-left: 30px;}
+/* .content ul{margin-left: 30px;} */
 .content ul li{margin-bottom:5px;color:#222;}
 .content ul li a{color: #222;
 display: block;
@@ -395,7 +401,7 @@ padding: 5px;}
 
 /* work page style*/
 
-.single_work_container{margin-left: -15px;}
+.single_work_container{margin-left: 3px;}
 .single_work{float: left;
 margin-left: 15px;
 width: 337px;position:relative;
@@ -443,9 +449,9 @@ margin-right: 15px;}
 transition: all 0.5s ease-in-out 0s !important;}
 .contact_us form {margin-left:30px;margin-top:25px;}
 .contact_us form p{margin-bottom:10px;}
-.contact_us form input.wpcf7-text{width: 45%;height: 30px;}
-.contact_us form input.wpcf7-email{width: 45%;height: 30px;}
-.contact_us form textarea.wpcf7-textarea{height: 150px;width: 70%;}
+.contact_us form input.wpcf7-text{width: 90%;height: 46px;}
+.contact_us form input.wpcf7-email{width: 90%;height: 46px;}
+.contact_us form textarea.wpcf7-textarea{height: 150px;width: 90%;}
 .contact_us form input.wpcf7-submit{background: #222222;
 border: medium none;
 color: #FFD500;

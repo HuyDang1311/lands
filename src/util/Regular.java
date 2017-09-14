@@ -33,11 +33,16 @@ public class Regular {
 	}	
 	
 	public boolean checkSdt(String str) {
-		return str.matches("[0-9]{10,13}$");
+		return str.matches("^[0-9]{10,13}$");
 	}
+	
+	public boolean checkToaDo(String str) {
+		return str.matches("[0-9].*[.,].*[0-9]$");
+	}
+	
 	public static void main(String[] args) {
 		Regular rd = new Regular();
-		System.out.println(rd.checkSdt("01645315444"));
+		System.out.println(rd.checkToaDo("fsdfdsf"));
 	}
 	
 	

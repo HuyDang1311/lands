@@ -70,8 +70,12 @@
     <put-attribute name="body" value="/WEB-INF/jsp/public/single.jsp" />
   </definition>
   
-  <definition name="public.contact.index" extends="public.template">
+  <definition name="public.land.contact" extends="public.template">
     <put-attribute name="body" value="/WEB-INF/jsp/public/contact.jsp" />
+  </definition>
+  
+  <definition name="public.land.gioithieu" extends="public.template">
+    <put-attribute name="body" value="/WEB-INF/jsp/public/gioithieu.jsp" />
   </definition>
   <!--END PUBLIC TEMPLATE -->
   
@@ -87,5 +91,14 @@
   </definition>
    <definition name="auth.403" extends="auth.template">
     <put-attribute name="body" value="/WEB-INF/jsp/auth/403.jsp" />
+  </definition>
+  
+  
+  <!-- 404 -->
+  <definition name="err.template" template="/WEB-INF/templates/err/template.jsp">
+    <put-attribute name="body" value="" />
+  </definition>
+  <definition name="err.404" extends="err.template">
+    <put-attribute name="body" value="/WEB-INF/jsp/err/404.jsp" />
   </definition>
 </tiles-definitions>

@@ -21,6 +21,11 @@ public class UserDao {
 		return jdbcTemplate.query(sql, new Object[]{offset, Defines.ROW_COUNT }, new BeanPropertyRowMapper<User>(User.class));
 	}
 	
+	public List<User> getListSearch(String name) {
+		String sql = "SELECT u.*, r.rankname FROM users AS u INNER JOIN rank AS r ON u.rank_id = r.id WHERE u.fullname LIKE '%"+name+"%'";
+		return jdbcTemplate.query(sql,new BeanPropertyRowMapper<User>(User.class));
+	}
+	
 	public int getAddUser(User objUser, String fullname, String password, int id_rank) {
 		String sql = "INSERT INTO users(username, fullname, password, rank_id) VALUE(?,?,?,?)";
 		return jdbcTemplate.update(sql, new Object[]{objUser.getUsername(),fullname,password, id_rank});
