@@ -11,10 +11,8 @@
 		<csrf disabled="true" />
 		<intercept-url pattern="/admin" access="hasAnyRole('ROLE_admin', 'ROLE_Mod', 'ROLE_TrialMod')" />
 		<intercept-url pattern="/admin/**" access="hasAnyRole('ROLE_admin', 'ROLE_Mod', 'ROLE_TrialMod')" />
-		
-		
-		<intercept-url pattern="/admin/lands/add" access="hasRole('ROLE_TrialMod')" />
-		<intercept-url pattern="/admin/lands" access="hasAnyRole('ROLE_admin', 'ROLE_Mod', 'ROLE_TrialMod')" />
+<!-- 		<intercept-url pattern="/admin/lands/add" access="hasRole('ROLE_TrialMod')" /> -->
+<!-- 		<intercept-url pattern="/admin/lands" access="hasAnyRole('ROLE_admin', 'ROLE_Mod', 'ROLE_TrialMod')" /> -->
 		
 <!-- 		<intercept-url pattern="/admin/" access="hasAnyRole('ROLE_admin', 'ROLE_Mod', 'ROLE_TrialMod')" /> -->
 <!-- 		<intercept-url pattern="/admin/cat" access="hasAnyRole('ROLE_admin', 'ROLE_Mod', 'ROLE_TrialMod')" /> -->

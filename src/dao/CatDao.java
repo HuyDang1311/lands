@@ -22,7 +22,16 @@ public class CatDao {
 		return jdbcTemplate.query(sql, new Object[] { offset, Defines.ROW_COUNT },
 				new BeanPropertyRowMapper<Cat>(Cat.class));
 	}
+	public List<Cat> getListSearch(String name) {
+		String sql = "SELECT * FROM categories WHERE cname LIKE '%"+name+"%'";
+		return jdbcTemplate.query(sql,new BeanPropertyRowMapper<Cat>(Cat.class));
+	}
 
+	public List<String> getFrameWork(String term) {
+		String sql = "SELECT * FROM categories WHERE cname LIKE '%"+term+"%'";
+		return jdbcTemplate.query(sql,new BeanPropertyRowMapper<String>(String.class) );
+	}
+	
 	public List<Cat> getListCat() {
 		String sql = "SELECT * FROM categories";
 		return jdbcTemplate.query(sql,new BeanPropertyRowMapper<Cat>(Cat.class));
@@ -66,5 +75,10 @@ public class CatDao {
 	public int countCat() {
 		String sql = "SELECT COUNT(*) FROM categories";
 		return jdbcTemplate.queryForObject(sql, Integer.class);
+	}
+	
+	public int countObjCat(int cid) {
+		String sql = "SELECT COUNT(*) FROM lands WHERE cid = ?";
+		return jdbcTemplate.queryForObject(sql, new Object[] { cid } , Integer.class);
 	}
 }

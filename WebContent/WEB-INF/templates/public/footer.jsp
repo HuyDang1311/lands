@@ -23,23 +23,23 @@
 			});
 		</script>
 		 <script type="text/javascript" src="<%=request.getContextPath() %>/templates/public/js/selectnav.min.js"></script>
-		<script type="text/javascript">
+		<!-- <script type="text/javascript">
 			selectnav('nav', {
 			  label: '-Navigation-',
 			  nested: true,
 			  indent: '-'
 			});
-		</script>		
-		<script src="js/pgwslider.js"></script>
-		<script type="text/javascript">
-			$(document).ready(function() {
-				$('.pgwSlider').pgwSlider({
-					
-					intervalDuration: 5000
-				
-				});
-			});
-		</script>
+		</script> -->
+		<script src="<%=request.getContextPath() %>/templates/public/js/pgwslider.js"></script>
+	    <script type="text/javascript">
+	        $(document).ready(function() {
+	            $('.pgwSlider').pgwSlider({
+	
+	                intervalDuration: 4000
+	
+	            });
+	        });
+	    </script>
 		<script type="text/javascript" src="<%=request.getContextPath() %>/templates/public/js/placeholder_support_IE.js"></script>
 	</body>
 </html>

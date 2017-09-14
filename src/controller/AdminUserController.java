@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
 import javax.websocket.server.PathParam;
 
 import org.apache.tiles.autotag.core.runtime.annotation.Parameter;
@@ -24,6 +25,7 @@ import dao.RankDao;
 import dao.UserDao;
 import entity.Cat;
 import entity.User;
+import util.BCrypt;
 import util.Regular;
 
 @Controller
@@ -37,33 +39,51 @@ public class AdminUserController {
 	private PasswordEncoder passwordEncoder;
 	@Autowired
 	private Regular regular;
-	@RequestMapping({"{page}",""})
-	public String index(ModelMap modelMap, @PathVariable(value="page", required=false) Integer currentPage) {
-		if(currentPage == null) {
-			currentPage = 1 ;
+
+	@RequestMapping({ "{page}", "" })
+	public String index(ModelMap modelMap, @PathVariable(value = "page", required = false) Integer currentPage, HttpSession session) {
+		if (currentPage == null) {
+			currentPage = 1;
 		}
-		int sumPage = (int)Math.ceil((float)userDao.countUser()/Defines.ROW_COUNT);
-		int offset = (currentPage - 1)*Defines.ROW_COUNT;
-		modelMap.addAttribute("sumPage",sumPage);
+		int sumPage = (int) Math.ceil((float) userDao.countUser() / Defines.ROW_COUNT);
+		int offset = (currentPage - 1) * Defines.ROW_COUNT;
+		modelMap.addAttribute("sumPage", sumPage);
 		modelMap.addAttribute("listUser", userDao.getListUser(offset));
-		modelMap.addAttribute("currentPage",currentPage);
+		modelMap.addAttribute("currentPage", currentPage);
+		User user = (User) session.getAttribute("user");
+		modelMap.addAttribute("user",user);
+		return "admin.user.index";
+	}
+	
+	@RequestMapping(value = "search", method = RequestMethod.POST)
+	public String search(@RequestParam("search") String search, ModelMap modelMap,HttpSession session) {
+		System.out.println(search);
+		modelMap.addAttribute("listUser", userDao.getListSearch(search));
+		User user = (User) session.getAttribute("user");
+		modelMap.addAttribute("user",user);
 		return "admin.user.index";
 	}
 
 	@RequestMapping("add")
-	public String add(ModelMap modelMap) {
-		modelMap.addAttribute("listRank", userDao.getListRank());
-		return "admin.user.add";
+	public String add(ModelMap modelMap,HttpSession session, RedirectAttributes ra) {
+		User user = (User) session.getAttribute("user");
+		if(user.getRank_id() == 1) {
+			modelMap.addAttribute("listRank", userDao.getListRank());
+			return "admin.user.add";
+		} else {
+			ra.addFlashAttribute("err", "Bạn không có quyền thêm user!");
+			return "redirect:/admin/user";
+		}
 	}
 
 	@RequestMapping(value = "add", method = RequestMethod.POST)
-	public String add(@ModelAttribute("objUser") User objUser, RedirectAttributes ra, ModelMap modelMap, @RequestParam("rid") String id_rank) {
+	public String add(@ModelAttribute("objUser") User objUser, RedirectAttributes ra, ModelMap modelMap,
+			@RequestParam("rid") String id_rank) {
 		String password = util.BCrypt.hashpw(objUser.getPassword(), util.BCrypt.gensalt());
-//				System.out.println("del:"+del);, @RequestParam("del") String del
 		List<String> err = new ArrayList<String>();
-		checkErrAdd(objUser, err, id_rank);	
-		if(err.size() > 0) {
-			modelMap.addAttribute("err",err);
+		checkErrAdd(objUser, err, id_rank);
+		if (err.size() > 0) {
+			modelMap.addAttribute("err", err);
 			modelMap.addAttribute("listRank", userDao.getListRank());
 			return "admin.user.add";
 		} else {
@@ -75,35 +95,44 @@ public class AdminUserController {
 				ra.addFlashAttribute("err", "Bạn đã thêm không thành công !");
 			}
 			return "redirect:/admin/user";
-		}	
+		}
 	}
 
 	@RequestMapping("edit/{id}")
-	public String edit(ModelMap modelMap, @PathVariable("id") String uid, RedirectAttributes ra) {
+	public String edit(ModelMap modelMap, @PathVariable("id") String uid, RedirectAttributes ra, HttpSession session) {
+		int id1 = Integer.parseInt(uid);
+		User user = (User) session.getAttribute("user");
+		if(user.getRank_id() == 1 || user.getId() == id1 ) {
 		try {
 			int id = Integer.parseInt(uid);
-			if(userDao.checkID(id).size() == 0) {
-				ra.addFlashAttribute("err","ID không tồn tại !");
+			if (userDao.checkID(id).size() == 0) {
+				ra.addFlashAttribute("err", "ID không tồn tại !");
 				return "redirect:/admin/user";
-			}else {
+			} else {
 				modelMap.addAttribute("listRank", userDao.getListRank());
-				modelMap.addAttribute("objUser",userDao.getObjUser(id));
+				modelMap.addAttribute("objUser", userDao.getObjUser(id));
 				return "admin.user.edit";
 			}
 		} catch (NumberFormatException e) {
-			ra.addFlashAttribute("err","Lỗi địa chỉ URL!");
+			ra.addFlashAttribute("err", "Lỗi địa chỉ URL!");
+			return "redirect:/admin/user";
+		}
+		}else {
+			ra.addFlashAttribute("err", "Bạn không có quyền sửa user!");
 			return "redirect:/admin/user";
 		}
 	}
 
 	@RequestMapping(value = "edit/{id}", method = RequestMethod.POST)
-	public String edit(@PathVariable("id") int id, Principal principal, @ModelAttribute("objUser") User objUser, RedirectAttributes ra, ModelMap modelMap, @RequestParam("rid") String id_rank, @RequestParam("oldpassword") String oldpassword) {
+	public String edit(@PathVariable("id") int id, Principal principal, @ModelAttribute("objUser") User objUser,
+			RedirectAttributes ra, ModelMap modelMap, @RequestParam("rid") String id_rank,
+			@RequestParam("oldpassword") String oldpassword) {
 		List<String> err = new ArrayList<String>();
-		checkErrEdit(principal, objUser, err, id_rank, oldpassword, id);	
-		if(err.size() > 0) {
-			modelMap.addAttribute("err",err);
+		checkErrEdit(principal, objUser, err, id_rank, oldpassword, id);
+		if (err.size() > 0) {
+			modelMap.addAttribute("err", err);
 			modelMap.addAttribute("listRank", userDao.getListRank());
-			modelMap.addAttribute("objUser",userDao.getObjUser(id));
+			modelMap.addAttribute("objUser", userDao.getObjUser(id));
 			return "admin.user.edit";
 		} else {
 			String fullname = regular.checkSpace(objUser.getFullname());
@@ -124,26 +153,32 @@ public class AdminUserController {
 	}
 
 	@RequestMapping("del/{id}")
-	public String edit(@PathVariable("id") String uid, RedirectAttributes ra) {
-		try {
-			int id = Integer.parseInt(uid);
-			if(userDao.checkID(id).size() == 0) {
-				ra.addFlashAttribute("err","ID không tồn tại !");
-				return "redirect:/admin/user";
-			}else {
-				if (userDao.getDelUser(id) > 0) {
-					ra.addFlashAttribute("msg", "Bạn đã xóa thành công !");
+	public String edit(@PathVariable("id") String uid, RedirectAttributes ra,HttpSession session) {
+		User user = (User) session.getAttribute("user");
+		if(user.getRank_id() == 1) {
+			try {
+				int id = Integer.parseInt(uid);
+				if (userDao.checkID(id).size() == 0) {
+					ra.addFlashAttribute("err", "ID không tồn tại !");
+					return "redirect:/admin/user";
 				} else {
-					ra.addFlashAttribute("err", "Bạn đã xóa không thành công !");
+					if (userDao.getDelUser(id) > 0) {
+						ra.addFlashAttribute("msg", "Bạn đã xóa thành công !");
+					} else {
+						ra.addFlashAttribute("err", "Bạn đã xóa không thành công !");
+					}
+					return "redirect:/admin/user";
 				}
+			} catch (NumberFormatException e) {
+				ra.addFlashAttribute("err", "Lỗi địa chỉ URL!");
 				return "redirect:/admin/user";
 			}
-		} catch (NumberFormatException e) {
-			ra.addFlashAttribute("err","Lỗi địa chỉ URL!");
+		} else {
+			ra.addFlashAttribute("err", "Bạn không có quyền xóa user!");
 			return "redirect:/admin/user";
 		}
 	}
-	
+
 	private void checkErrAdd(User objUser, List<String> err, String id_rank) {
 		if (regular.checkNameEmpty(objUser.getUsername()) == true) {
 			err.add("Username không được chứa toàn bộ khoảng trắng! Mời bạn nhập lại");
@@ -155,8 +190,8 @@ public class AdminUserController {
 					err.add("Trùng username !");
 				}
 			}
-		} 
-		
+		}
+
 		if (regular.checkNameEmpty(objUser.getFullname()) == true) {
 			err.add("Fullname không được chứa toàn bộ khoảng trắng! Mời bạn nhập lại");
 		} else {
@@ -164,10 +199,10 @@ public class AdminUserController {
 				err.add("Fullname có độ dài tối thiểu 3 ký tự và tối đa 32 ký tự và không có kí tự số !");
 			}
 		}
-		
+
 		try {
 			int rid = Integer.parseInt(id_rank);
-			if(rid == 0) {
+			if (rid == 0) {
 				err.add("Vui lòng chọn cấp bậc cho user!");
 			} else {
 				if (rankDao.checkID(rid).size() == 0) {
@@ -178,7 +213,6 @@ public class AdminUserController {
 			err.add("Lỗi ID cấp bậc!");
 		}
 
-		
 		if (regular.checkNameEmpty(objUser.getPassword()) == true) {
 			err.add("Password không được chứa toàn bộ khoảng trắng! Mời bạn nhập lại");
 		} else {
@@ -186,8 +220,8 @@ public class AdminUserController {
 				err.add("Password có độ dài tối thiểu 8 ký tự và tối đa 32 ký tự, có chứa ít nhất 1 ký tự số từ 0 – 9, 1 ký tự chữ thường, 1 ký tự chữ hoa và 1 ký tự trong tập các ký tự đặc biệt như: @;#;$;!;%");
 			}
 		}
-		
-		if (regular.checkNameEmpty(objUser.getRepassword()) == true ) {
+
+		if (regular.checkNameEmpty(objUser.getRepassword()) == true) {
 			err.add("Xác nhận Password không được chứa toàn bộ khoảng trắng! Mời bạn nhập lại");
 		} else {
 			if (regular.checkPassword(objUser.getRepassword()) == false) {
@@ -199,8 +233,9 @@ public class AdminUserController {
 			}
 		}
 	}
-	
-	private void checkErrEdit(Principal principal, User objUser, List<String> err, String id_rank, String oldpassword, int id) {
+
+	private void checkErrEdit(Principal principal, User objUser, List<String> err, String id_rank, String oldpassword,
+			int id) {
 		if (regular.checkNameEmpty(objUser.getFullname()) == true) {
 			err.add("Fullname không được chứa toàn bộ khoảng trắng! Mời bạn nhập lại");
 		} else {
@@ -208,33 +243,32 @@ public class AdminUserController {
 				err.add("Fullname có độ dài tối thiểu 3 ký tự và tối đa 32 ký tự và không có kí tự số !");
 			}
 		}
-		
+
 		try {
 			int rid = Integer.parseInt(id_rank);
-				if (rankDao.checkID(rid).size() == 0) {
-					err.add("Không tồn tại ID cấp bậc!");
-				}
+			if (rankDao.checkID(rid).size() == 0) {
+				err.add("Không tồn tại ID cấp bậc!");
+			}
 		} catch (NumberFormatException e) {
 			err.add("Lỗi ID cấp bậc!");
 		}
 		if ("".equals(oldpassword)) {
 			err.add("Mời bạn nhập mật khẩu cũ !");
 		} else {
-		    String passwd = passwordEncoder.encode("oldpassword");
-			String password = util.BCrypt.hashpw(oldpassword, util.BCrypt.gensalt());
-			if (passwordEncoder.matches(passwd,  userDao.getcheckOldPass(principal.getName()).getPassword())) {
+			String passcu = userDao.getcheckOldPass(principal.getName()).getPassword();
+			if (BCrypt.checkpw(oldpassword, passcu) == false) {
 				err.add("Mật khẩu cũ không đúng! Mời bạn nhập lại");
 			}
 		}
-		
+
 		if ("".equals(objUser.getPassword()) && !"".equals(objUser.getRepassword())) {
 			err.add("Password không được trống! Mời bạn nhập lại");
 		}
-		
+
 		if (!"".equals(objUser.getPassword()) && "".equals(objUser.getRepassword())) {
 			err.add("Mời bạn xác nhận lại Password");
 		}
-		
+
 		if (!"".equals(objUser.getPassword()) && !"".equals(objUser.getRepassword())) {
 			if (regular.checkNameEmpty(objUser.getPassword()) == true) {
 				err.add("Password không được chứa toàn bộ khoảng trắng! Mời bạn nhập lại");
@@ -243,7 +277,7 @@ public class AdminUserController {
 					err.add("Password có độ dài tối thiểu 8 ký tự và tối đa 32 ký tự, có chứa ít nhất 1 ký tự số từ 0 – 9, 1 ký tự chữ thường, 1 ký tự chữ hoa và 1 ký tự trong tập các ký tự đặc biệt như: @;#;$;!;%");
 				}
 			}
-			if (regular.checkNameEmpty(objUser.getRepassword()) == true ) {
+			if (regular.checkNameEmpty(objUser.getRepassword()) == true) {
 				err.add("Xác nhận Password không được chứa toàn bộ khoảng trắng! Mời bạn nhập lại");
 			} else {
 				if (regular.checkPassword(objUser.getRepassword()) == false) {

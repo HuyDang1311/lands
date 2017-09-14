@@ -4,7 +4,7 @@
 <tiles:insertAttribute name="header"></tiles:insertAttribute>
 		<section id="content_area">
 			<div class="clearfix wrapper main_content_area">
-				<div class="clearfix main_content floatleft">
+				<div class="clearfix main_content floatleft" style="background-color: #fafafb;">
 					<tiles:insertAttribute name="body"></tiles:insertAttribute>
 				</div>
 				<div class="clearfix sidebar_container floatright">

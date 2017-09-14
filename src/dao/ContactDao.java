@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import constant.Defines;
 import entity.Cat;
 import entity.Contact;
+import entity.User;
 @Repository
 public class ContactDao {
 	@Autowired
@@ -25,6 +26,11 @@ public class ContactDao {
 				new BeanPropertyRowMapper<Contact>(Contact.class));
 	}
 	
+	public List<Contact> getListSearch(String name) {
+		String sql = "SELECT * FROM vnecontact WHERE fullname LIKE '%"+name+"%'";
+		return jdbcTemplate.query(sql,new BeanPropertyRowMapper<Contact>(Contact.class));
+	}
+	
 	public List<Contact> getCheckID(int id) {
 		String sql = "SELECT * FROM vnecontact WHERE cid = ?";
 		return jdbcTemplate.query(sql, new Object[] {id},
@@ -34,5 +40,10 @@ public class ContactDao {
 	public int getDelContact(int id) {
 		String sql = "DELETE FROM vnecontact WHERE cid = ?";
 		return jdbcTemplate.update(sql, new Object[]{id});
+	}
+	
+	public int getAddContact(Contact objContact, String fullname) {
+		String sql = "INSERT INTO vnecontact(fullname, email, content) VALUE(?,?,?)";
+		return jdbcTemplate.update(sql, new Object[]{fullname,objContact.getEmail(),objContact.getContent()});
 	}
 }

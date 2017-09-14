@@ -6,7 +6,7 @@
     <li><a href="${pageContext.request.contextPath}/admin/cat"><i class="glyphicon glyphicon-list"></i> Danh mục</a></li>
     <li><a href="${pageContext.request.contextPath}/admin/lands"><i class="glyphicon glyphicon-book"></i> Tin tức</a></li>
     <li><a href="${pageContext.request.contextPath}/admin/contact"><i class="glyphicon glyphicon-plus"></i> Liên hệ</a></li>
-    <li><a href="${pageContext.request.contextPath}/admin/user"><i class="glyphicon glyphicon-plus"></i> Người dùng</a></li>
+    <li><a href="${pageContext.request.contextPath}/admin/user"><i class="glyphicon glyphicon-user"></i> Người dùng</a></li>
  <!--    <li class="submenu">
          <a href="#">
             <i class="glyphicon glyphicon-list"></i> Pages
